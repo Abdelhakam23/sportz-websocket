@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Status {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Match {
+  id           String       @id @default(uuid())
+  homeTeam     String
+  awayTeam     String
+  sport        String
+  status       Status       @default(SCHEDULED)
+  startTime    DateTime
+  endTime      DateTime?
+  homeScore    Int          @default(0)
+  awayScore    Int          @default(0)
+  createdAt    DateTime     @default(now())
+  commentaries Commentary[]
+
+  @@index([sport, status])
+}
+
+model Commentary {
+  id        String   @id @default(uuid())
+  matchId   String
+  minute    Int
+  sequence  Int
+  period    String
+  eventType String
+  actor     String
+  team      String
+  message   String
+  metaData  Json
+  tags      String[]
+  createdAt DateTime @default(now())
+
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([matchId, minute, sequence])
+}

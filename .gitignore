@@ -40,6 +40,9 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+.agents/
+.claude/
+.windsurf/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -150,3 +153,4 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+/src/generated/prisma
