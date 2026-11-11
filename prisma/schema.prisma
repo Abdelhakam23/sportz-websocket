@@ -14,7 +14,7 @@ datasource db {
 
 enum Status {
   SCHEDULED
-  IN_PROGRESS
+  LIVE
   COMPLETED
 }
 
@@ -31,6 +31,7 @@ model Match {
   createdAt    DateTime     @default(now())
   commentaries Commentary[]
 
+  @@unique([homeTeam, awayTeam, startTime])
   @@index([sport, status])
 }
 
