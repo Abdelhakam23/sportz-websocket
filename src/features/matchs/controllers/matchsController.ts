@@ -48,23 +48,30 @@ const createMatch = async (req: Request, res: Response) => {
   }
 };
 
-
 const getAllMatchs = async (req: Request, res: Response) => {
-    try {
-        const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
-        const page = req.query.page ? parseInt(req.query.page as string) : 1;
-        const skip = (page -1)* limit;
-        const matchs = await prisma.match.findMany({
-            take:limit,
-            skip:skip,
-            orderBy:{
-                startTime:'desc'
-            }
-        });
-        return res.status(200).json({ message: "Matchs Retrieved Successfully", data: matchs });
-    } catch (error) {
-        return res.status(500).json({ Error: "Internal Server Error", details: error })
-    }
-}
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+    const page = req.query.page ? parseInt(req.query.page as string) : 1;
+    const skip = (page - 1) * limit;
+    const matchs = await prisma.match.findMany({
+      take: limit,
+      skip: skip,
+      orderBy: {
+        startTime: "desc",
+      },
+    });
+    return res.status(200).json({
+      message: "Matchs Retrieved Successfully",
+      reults: matchs.length,
+      page: page,
+      limit: limit,
+      data: matchs,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ Error: "Internal Server Error", details: error });
+  }
+};
 
-export { createMatch , getAllMatchs };
+export { createMatch, getAllMatchs };
