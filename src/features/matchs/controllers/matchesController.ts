@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../../config/db.ts";
 import { getMatchStatus } from "../../../utils/matchStatus.ts";
 import { Status } from "../../../generated/prisma/enums.ts";
+import { broadcastMatchCreated } from "../../../websocket/index.ts";
 
 const createMatch = async (req: Request, res: Response) => {
   try {
@@ -37,6 +38,8 @@ const createMatch = async (req: Request, res: Response) => {
         status: getMatchStatus(new Date(startTime), new Date(endTime)),
       },
     });
+
+     broadcastMatchCreated(newMatch);
 
     return res
       .status(201)
