@@ -1,59 +1,33 @@
 import WebSocket, { WebSocketServer } from "ws";
-
 import { Server as HttpServer } from "http";
+
+//  Server   ,  PayLoad , Broadcasting
 
 let wss: WebSocketServer;
 
-interface ExtWebSocket extends WebSocket {
-  isAlive: boolean;
-}
-const sendJson = (socket: WebSocket, payLoad: Record<string, unknown>) => {
-  if (socket.readyState !== WebSocket.OPEN) return;
-  socket.send(JSON.stringify(payLoad));
-};
-
 const broadcast = (payLoad: Record<string, unknown>) => {
-  if (!wss) return;
   wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
+    client.readyState === WebSocket.OPEN &&
       client.send(JSON.stringify(payLoad));
-    }
   });
 };
 
 export const connectToWebSocket = (server: HttpServer) => {
-  wss = new WebSocketServer({
-    server,
-    path: "/ws",
-    maxPayload: 1024 * 1024 * 1024,
-  });
-  wss.on("connection", (socket: ExtWebSocket) => {
-    socket.isAlive = true;
+  wss = new WebSocketServer({ server, path: "/ws" });
 
-    socket.on("pong", () => {
-      socket.isAlive = true;
+  wss.on("connection", (socket) => {
+    socket.on("error", (err) => {
+      console.error(`Error on socket:`, err);
     });
-    sendJson(socket, { type: "Connected" });
-    socket.on("error", console.error);
-  });
 
-  const interval = setInterval(() => {
-    wss.clients.forEach((client) => {
-      const extClient = client as ExtWebSocket;
-      if (extClient.isAlive === false) {
-        return client.terminate();
-      }
-
-      extClient.isAlive = false;
-      client.ping();
+    socket.on("close", () => {
+      console.log(`Connection closed`);
     });
-  }, 30000);
-
-  wss.on("close", () => {
-    clearInterval(interval);
   });
+
+  console.log("WebSocket is Running ");
 };
 
 export const broadcastMatchCreated = (match: Record<string, unknown>) => {
-  broadcast({ type: "Match Created", match });
+  broadcast({ type: "match_created", data: match });
 };

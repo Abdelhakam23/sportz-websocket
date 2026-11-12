@@ -19,6 +19,6 @@ app.use("/matchs", matchesRouters);
 server.listen(PORT,HOST, () => {
   const baseUrl =HOST=== '0.0.0.0'?`http://localhost:${PORT}` : `http://${HOST}:${PORT}`
   console.log(`Server is running on port ${baseUrl}`);
-  console.log(`Websocket Server is Running on ${baseUrl.replace('http','ws')}/ws`);
+  // console.log(`Websocket Server is Running on ${baseUrl.replace('http','ws')}/ws`);
   
 });
