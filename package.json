@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "wss": "tsx watch src/websocket/index.ts"
-
   },
   "keywords": [],
   "type": "module",
@@ -19,6 +18,8 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@arcjet/inspect": "^1.15.0",
+    "@arcjet/node": "^1.15.0",
     "@prisma/adapter-neon": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "@types/express": "^5.0.6",
