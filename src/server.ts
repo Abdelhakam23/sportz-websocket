@@ -3,6 +3,7 @@ import matchesRouters from "./features/matchs/routes/matchesRoutes";
 import http from "http";
 import { connectToWebSocket } from "./websocket";
 import { securityMiddleware } from "./arcjet";
+import { commentaryRouter } from "./features/commentary/routes/commentaryRoutes";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -13,7 +14,9 @@ const server = http.createServer(app);
 app.use(express.json());
 
 app.use(securityMiddleware());
-app.use("/matchs", matchesRouters);
+app.use("/matches", matchesRouters);
+app.use("/commentary", commentaryRouter);
+
 
  connectToWebSocket(server);
 
