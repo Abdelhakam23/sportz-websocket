@@ -5,6 +5,10 @@ import { Server as HttpServer } from "http";
 
 let wss: WebSocketServer;
 
+interface extWebSocket extends WebSocket{
+  isAlive: boolean;
+}
+
 const broadcast = (payLoad: Record<string, unknown>) => {
   wss.clients.forEach((client) => {
     client.readyState === WebSocket.OPEN &&
@@ -15,13 +19,31 @@ const broadcast = (payLoad: Record<string, unknown>) => {
 export const connectToWebSocket = (server: HttpServer) => {
   wss = new WebSocketServer({ server, path: "/ws" });
 
-  wss.on("connection", (socket) => {
+  wss.on("connection", (socket:extWebSocket) => {
+    socket.isAlive = true;
+
+    socket.on('pong',()=>{
+      socket.isAlive = true;
+    })
+
+    const interval = setInterval(()=>{
+      wss.clients.forEach((client)=>{
+        const extClient = client as extWebSocket;
+        if(!extClient.isAlive){
+        return  extClient.terminate();
+        }
+
+        extClient.isAlive = false;
+        client.ping();
+
+      })
+    },30000)
     socket.on("error", (err) => {
       console.error(`Error on socket:`, err);
     });
 
     socket.on("close", () => {
-      console.log(`Connection closed`);
+      clearInterval(interval)
     });
   });
 
